@@ -66,7 +66,7 @@ export async function downloadGameFiles($version:string, isCustom:boolean = fals
         await download(manifest.logging.client.file.url, path.join(root, manifest.logging.client.file.id))
     }
 
-    await download(manifest.downloads.client.url, path.join(root, "versions", manifest.id, manifest.downloads.client.path.replace("client", manifest.id)))
+    await download(manifest.downloads.client.url, path.join(root, "versions", manifest.id, `${manifest.id}.jar`))
 }
 
 setRoot(path.join(Deno.cwd(), "game"))
