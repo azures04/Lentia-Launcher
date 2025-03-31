@@ -2,7 +2,7 @@ import * as utils from "./utils.ts"
 import * as path from "jsr:@std/path"
 import bus from "./events.ts"
 
-export async function download(downloadUrl: string, downloadPath: string): Promise<void> {
+export async function download(downloadUrl: string, downloadPath: string): Promise<string | void> {
     await utils.createIfNotExists(path.parse(downloadPath).dir)
 
     const response = await fetch(downloadUrl)
@@ -11,11 +11,8 @@ export async function download(downloadUrl: string, downloadPath: string): Promi
     }
 
     const contentLength = response.headers.get("content-length")
-    if (!contentLength) {
-        throw new Error("Failed to get content length")
-    }
-
-    const totalSize = parseInt(contentLength, 10)
+    const contentDisposition = response.headers.get("content-disposition")
+    const totalSize = contentLength ? parseInt(contentLength, 10) : undefined
     const file = await Deno.open(downloadPath, { write: true, create: true, truncate: true })
     const reader = response.body.getReader()
     let downloadedSize = 0
@@ -28,14 +25,25 @@ export async function download(downloadUrl: string, downloadPath: string): Promi
 
             await file.write(value)
             downloadedSize += value.length
-            const progress = (downloadedSize / totalSize) * 100
-            const speed = downloadedSize / ((performance.now() - startTime) / 1000)
 
-            bus.emit("download-status", {
-                file: downloadPath,
-                progress: progress.toFixed(2),
-                speed: speed.toFixed(2),
-            })
+            if (totalSize) {
+                const progress = (downloadedSize / totalSize) * 100
+                const speed = downloadedSize / ((performance.now() - startTime) / 1000)
+
+                bus.emit("download-status", {
+                    file: downloadPath,
+                    progress: progress.toFixed(2),
+                    speed: speed.toFixed(2),
+                })
+            } else {
+                const speed = downloadedSize / ((performance.now() - startTime) / 1000)
+
+                bus.emit("download-status", {
+                    file: downloadPath,
+                    downloadedSize: downloadedSize,
+                    speed: speed.toFixed(2),
+                })
+            }
         }
 
         bus.emit("download-complete", {
@@ -49,5 +57,8 @@ export async function download(downloadUrl: string, downloadPath: string): Promi
         throw error
     } finally {
         file.close()
+        if (contentDisposition?.split("; ")[1]) {
+            return contentDisposition?.split("; ")[1].split("=")[1]
+        }
     }
 }

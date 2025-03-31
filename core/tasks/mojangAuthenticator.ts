@@ -1,16 +1,9 @@
+import { MojangUserProfile } from "../interfaces.ts"
+
 const yggdrasilServer:string = "https://authserver.mojang.com"
 const uuid = crypto.randomUUID()
 
-interface MojangUserProfile {
-    access_token: string,
-    client_token: string,
-    uuid: string,
-    name: string,
-    user_properties: string,
-    selected_profile: Object | null
-}
-
-export async function authenticate(username:string, password:string, clientToken: string | null = null): Promise<MojangUserProfile | Error> {
+export async function authenticate(username: string, password: string, clientToken: string | null): Promise<MojangUserProfile | Error> {
     if (!password) {
         const $uuid = crypto.randomUUID()
         const user: MojangUserProfile = {
@@ -58,7 +51,7 @@ export async function authenticate(username:string, password:string, clientToken
     }
 }
 
-export async function refresh(accessToken:string, clientToken: string): Promise<MojangUserProfile | Error> {
+export async function refresh(accessToken: string, clientToken: string): Promise<MojangUserProfile | Error> {
     const response = await fetch(`${yggdrasilServer}/validate`, {
         headers: {
             "Content-Type": "application/json"
@@ -85,7 +78,7 @@ export async function refresh(accessToken:string, clientToken: string): Promise<
     }
 }
 
-export async function validate(accessToken:string, clientToken: string): Promise<boolean> {
+export async function validate(accessToken: string, clientToken: string): Promise<boolean> {
     const response = await fetch(`${yggdrasilServer}/validate`, {
         headers: {
             "Content-Type": "application/json"
@@ -102,7 +95,7 @@ export async function validate(accessToken:string, clientToken: string): Promise
     }
 }
 
-export async function invalidate(accessToken:string, clientToken: string): Promise<boolean> {
+export async function invalidate(accessToken: string, clientToken: string): Promise<boolean> {
     const response = await fetch(`${yggdrasilServer}/validate`, {
         headers: {
             "Content-Type": "application/json"
@@ -119,7 +112,7 @@ export async function invalidate(accessToken:string, clientToken: string): Promi
     }
 }
 
-export async function signOut(username:string, password:string): Promise<boolean> {
+export async function signOut(username: string, password: string): Promise<boolean> {
     const response = await fetch(`${yggdrasilServer}/signout`, {
         headers: {
             "Content-Type": "application/json"

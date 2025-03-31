@@ -1,70 +1,4 @@
-interface XboxResponseSchem {
-    IssueInstant: string,
-    NotAfter: string,
-    Token: string, 
-    DisplayClaims: {
-        xui: [
-            {
-                uhs: string 
-            }
-        ]
-    }
-}
-
-interface XstsErrorReponse {
-    Identity: string,
-    XErr: number,
-    Message: string,
-    Redirect: string
-}
-
-interface MinecraftXboxLoginResponse {
-    username: string,
-    roles: Array<Object>,
-    access_token: string,
-    token_type: string,
-    expires_in: number
-}
-
-interface McStoreResponse {
-    items: McStoreResponseItem[],
-    signature: string,
-    keyId: string
-}
-
-interface McStoreResponseItem {
-    name: string,
-    signature: string 
-}
-
-interface MinecraftProfile {
-    id: string
-    name: string
-    skins: Skin[]
-    capes: Cape[]
-}
-
-interface Skin {
-    id: string
-    state: "ACTIVE" | "INACTIVE"
-    url: string
-    variant: "CLASSIC" | "SLIM"
-    alias: string
-}
-
-interface Cape {
-    id: string
-    state: "ACTIVE" | "INACTIVE"
-    url: string
-    alias: string
-}
-
-
-interface DontHaveMinecraftError {
-    path: string,
-    error: string,
-    errorMessage: string
-}
+import { XstsErrorReponse, DeviceCodeResponse, DontHaveMinecraftError, McStoreResponse, MinecraftProfile, MinecraftXboxLoginResponse, OAuthErrorResponse, XboxResponseSchem } from "../interfaces.ts"
 
 export const XstsErrorCodes: Record<number, string> = {
     2148916227: "The account is banned from Xbox.",
@@ -75,6 +9,62 @@ export const XstsErrorCodes: Record<number, string> = {
     2148916238: "The account is a child (under 18) and must be added to a Family.",
     2148916262: "Unknown error occurred."
 }
+
+export function getAuthorizationUrl(clientId: string, redirectUri: string): string {
+    const baseUrl = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize"
+    const scope = "XboxLive.signin offline_access"
+    const responseType = "code"
+
+    const url = new URL(baseUrl)
+    url.searchParams.append("client_id", clientId)
+    url.searchParams.append("response_type", responseType)
+    url.searchParams.append("redirect_uri", redirectUri)
+    url.searchParams.append("scope", scope)
+
+    return url.toString()
+}
+
+export async function getCodeLink(client: string): Promise<DeviceCodeResponse | OAuthErrorResponse> {
+    const response = await fetch("https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode", {
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        method: "POST",
+        body: `
+        \rclient_id=${client}
+        \r&scope=XboxLive.signin offline_access
+        `
+    })
+    const result = await response.json() as DeviceCodeResponse | OAuthErrorResponse
+    return result
+}
+
+export async function getAccessToken(clientId: string, code: string, redirectUri: string): Promise<string | null> {
+    const tokenUrl = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token"
+    
+    const body = new URLSearchParams()
+    body.append("client_id", clientId)
+    body.append("grant_type", "authorization_code")
+    body.append("code", code)
+    body.append("redirect_uri", redirectUri)
+
+    const response = await fetch(tokenUrl, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: body.toString(),
+    });
+
+    if (!response.ok) {
+        console.error("Erreur lors de la récupération du token d'accès :", await response.text())
+        return null
+    }
+
+    const data = await response.json()
+    return data.access_token
+}
+
 
 export async function xboxLiveAuthenticate(accessToken: string): Promise<XboxResponseSchem> {
     const response = await fetch("https://user.auth.xboxlive.com/user/authenticate", {
@@ -161,5 +151,8 @@ export async function getPlayerProfile(accessToken: string): Promise<MinecraftPr
         }
     })
     const result = await response.json() as MinecraftProfile | DontHaveMinecraftError
+    if (!("access_token" in result) && !("errorMessage" in result)) {
+        result.accessToken = accessToken
+    }
     return result
 }

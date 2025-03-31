@@ -3,7 +3,6 @@
   "specifiers": {
     "jsr:@denosaurs/event@^2.0.2": "2.0.2",
     "jsr:@denosaurs/plug@1": "1.0.6",
-    "jsr:@rabbit-company/downloader@~0.1.2": "0.1.2",
     "jsr:@std/assert@0.221": "0.221.0",
     "jsr:@std/bytes@^1.0.5": "1.0.5",
     "jsr:@std/crypto@^1.0.4": "1.0.4",
@@ -15,6 +14,7 @@
     "jsr:@std/path@^1.0.8": "1.0.8",
     "jsr:@std/uuid@^1.0.6": "1.0.6",
     "jsr:@webview/webview@0.9": "0.9.0",
+    "jsr:@zip-js/zip-js@^2.7.59": "2.7.59",
     "npm:@types/node@*": "22.12.0"
   },
   "jsr": {
@@ -29,9 +29,6 @@
         "jsr:@std/fs",
         "jsr:@std/path@0.221"
       ]
-    },
-    "@rabbit-company/downloader@0.1.2": {
-      "integrity": "53317d754e6e366aa3845ee7001c52f6101a2107315240b286306a3f3f110de3"
     },
     "@std/assert@0.221.0": {
       "integrity": "a5f1aa6e7909dbea271754fd4ab3f4e687aeff4873b4cef9a320af813adb489a"
@@ -76,6 +73,9 @@
       "dependencies": [
         "jsr:@denosaurs/plug"
       ]
+    },
+    "@zip-js/zip-js@2.7.59": {
+      "integrity": "db3dcb0fa2a264b7cd01d37cd3191a546a4a0aff008173fc28931c23c846e487"
     }
   },
   "npm": {
@@ -89,13 +89,27 @@
       "integrity": "sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg=="
     }
   },
+  "remote": {
+    "https://deno.land/std@0.61.0/_util/assert.ts": "e1f76e77c5ccb5a8e0dbbbe6cce3a56d2556c8cb5a9a8802fc9565af72462149",
+    "https://deno.land/std@0.61.0/path/_constants.ts": "e11f32a36644e04dce243f3c1f30c02cc5d149827f48a755628176f0707cfc70",
+    "https://deno.land/std@0.61.0/path/_globrex.ts": "696996deed47bd98fcab9de0034233380ead443a5cd702631151c6a71e3d21a2",
+    "https://deno.land/std@0.61.0/path/_interface.ts": "5876f91d35fd42624893a4aaddaee352144e1f46e719f1dde6511bab7c3c1029",
+    "https://deno.land/std@0.61.0/path/_util.ts": "76f73f9b4a994e2859e9d4544cfc34f0ff21b48893c65023025e572c21a43542",
+    "https://deno.land/std@0.61.0/path/common.ts": "e4ec66a7416d56f60331b66e27a8a4f08c7b1cf48e350271cb69754a01cf5c04",
+    "https://deno.land/std@0.61.0/path/glob.ts": "ff5c4d04d643083dc5c8a46da83b8c836934155c2a7ad72675c43092b2a435ea",
+    "https://deno.land/std@0.61.0/path/mod.ts": "6de8885c2534757097818e302becd1cefcbc4c28ac022cc279e612ee04e8cfd1",
+    "https://deno.land/std@0.61.0/path/posix.ts": "2ed477953d037fd42d077822e6db0adaa8dcc4ce1cfbb673b0a49ce1c1c301ff",
+    "https://deno.land/std@0.61.0/path/separator.ts": "9dd15d46ff84a16e13554f56af7fee1f85f8d0f379efbbe60ac066a60561f036",
+    "https://deno.land/std@0.61.0/path/win32.ts": "e4f0b577346f0936d92b6473369248773db217ce385295024a6875e559376e43",
+    "https://raw.githubusercontent.com/denorg/arch/master/mod.ts": "2e57535c24409db87e4d461227088eb4189c320411c05f4a4a96d00c966e2158"
+  },
   "workspace": {
     "dependencies": [
       "jsr:@denosaurs/event@^2.0.2",
-      "jsr:@rabbit-company/downloader@~0.1.2",
       "jsr:@std/path@^1.0.8",
       "jsr:@std/uuid@^1.0.6",
-      "jsr:@webview/webview@0.9"
+      "jsr:@webview/webview@0.9",
+      "jsr:@zip-js/zip-js@^2.7.59"
     ]
   }
 }
