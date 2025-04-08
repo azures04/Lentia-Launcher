@@ -117,13 +117,11 @@ export async function downloadGameFiles($version: string, isCustom: boolean = fa
         if (manifest.logging?.client) {
             await download(manifest.logging.client.file.url, path.join(root, manifest.logging.client.file.id))
         }
-        if (!java.isJavaSpecificVersionInstalled(manifest.javaVersion.majorVersion)) {
-            await java.installJava(manifest.javaVersion.majorVersion, os, arch, root)
-        }
     } catch (error) {
         console.log(error)
     }
 }
 
+
 setRoot(path.join(Deno.cwd(), "game"))
-downloadGameFiles("1.7.10")
+downloadGameFiles("1.12.2")

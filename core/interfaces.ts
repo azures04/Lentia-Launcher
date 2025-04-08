@@ -94,6 +94,7 @@ export interface AuthorizationObject {
         name: string,
         uuid: string
     },
+    userType: "msa" | "mojang",
     user_properties: object
 }
 
@@ -143,4 +144,21 @@ export interface SemanticVersion {
     major: number,
     minor: number,
     patch: number
+}
+
+export interface GamArguments {
+    username: string,
+    version: string,
+    gameDir: string,
+    assetsDir: string,
+    assetsIndex: string,
+    uuid: string,
+    accessToken: string,
+    userType: "msa" | "mojang",
+    versionType: "version" | "snapshot",
+}
+
+export interface VersionObject {
+    id: string,
+    type: "version" | "snapshot",
 }
